@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Social{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__left">
+      <a class="brand" href="{% url 'feed' %}">Socio<span>Mix</span></a>
+    </div>
+    <form class="topbar__search" action="#" method="get">
+      <input type="search" name="q" placeholder="Search" aria-label="Search" />
+    </form>
+    <nav class="topbar__nav">
+      {% if user.is_authenticated %}
+        <a href="{% url 'feed' %}" aria-label="Home">🏠</a>
+        <a href="{% url 'profile_detail' user.username %}" aria-label="Profile">👤</a>
+        <form action="{% url 'logout' %}" method="post" style="display:inline">
+          {% csrf_token %}
+          <button class="icon-btn" type="submit" title="Logout" aria-label="Logout">⏻</button>
+        </form>
+      {% else %}
+        <a class="btn btn--ghost" href="{% url 'login' %}">Login</a>
+        <a class="btn" href="{% url 'signup' %}">Sign up</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar left">
+      <div class="card">
+        <h3>Shortcuts</h3>
+        <ul class="menu">
+          <li><a href="{% url 'feed' %}">Feed</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'profile_detail' user.username %}">Your Profile</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Trends</h3>
+        <ul class="list muted">
+          <li>#webdev</li>
+          <li>#design</li>
+          <li>#django</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+
+    <aside class="sidebar right">
+      <div class="card">
+        <h3>People</h3>
+        <p class="muted">Suggested follows coming soon.</p>
+      </div>
+      <div class="card">
+        <h3>Now playing</h3>
+        <p class="muted">Embed videos or spaces here.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="footer muted">© {% now "Y" %} SocioMix</footer>
+</body>
+</html>

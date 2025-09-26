@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth">
+  <div class="card panel">
+    <h2 style="margin-top:0">Welcome back</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="actions">
+        <button class="btn" type="submit">Login</button>
+        <a class="btn btn--ghost" href="{% url 'signup' %}">Create account</a>
+      </div>
+    </form>
+  </div>
+  <p class="muted">Use your username and password.</p>
+</div>
+{% endblock %}

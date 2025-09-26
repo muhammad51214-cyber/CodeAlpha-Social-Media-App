@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}@{{ profile_user.username }}{% endblock %}
+{% block content %}
+<section class="card">
+  <div style="display:flex; align-items:center; gap:14px;">
+    <div class="avatar" style="width:64px;height:64px;"></div>
+    <div>
+      <h2 style="margin:0">@{{ profile_user.username }}</h2>
+      <p class="muted" style="margin:4px 0 0">{{ profile_user.profile.bio|default:"No bio yet." }}</p>
+    </div>
+  </div>
+  <div class="actions" style="justify-content:space-between;">
+    <div class="list" style="display:flex; gap:12px;">
+      <span class="chip">Followers {{ profile_user.followers.count }}</span>
+      <span class="chip">Following {{ profile_user.following.count }}</span>
+      <span class="chip">Posts {{ posts|length }}</span>
+    </div>
+    {% if user.is_authenticated and user != profile_user %}
+    <form action="{% url 'follow_toggle' profile_user.username %}" method="post">
+      {% csrf_token %}
+      <button class="btn" type="submit">{{ is_following|yesno:"Unfollow,Follow" }}</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+
+{% for post in posts %}
+  <article class="card post">
+    <div class="avatar"></div>
+    <div>
+      <div class="post__header">
+        <a class="post__user" href="{% url 'profile_detail' post.author.username %}">@{{ post.author.username }}</a>
+        <span class="post__time">{{ post.created_at|date:"M j, H:i" }}</span>
+      </div>
+      <p>{{ post.content|linebreaksbr }}</p>
+      <div class="actions">
+        <form action="{% url 'like_toggle' post.pk %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn--ghost" type="submit">❤ {{ post.like_count }}</button>
+        </form>
+        <a class="btn btn--ghost" href="{% url 'post_detail' post.pk %}">💬 {{ post.comments.count }}</a>
+      </div>
+    </div>
+  </article>
+{% empty %}
+  <div class="card"><p class="muted">No posts yet.</p></div>
+{% endfor %}
+{% endblock %}

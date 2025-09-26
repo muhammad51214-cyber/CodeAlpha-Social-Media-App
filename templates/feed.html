@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block content %}
+
+<section class="card composer">
+  <div class="avatar"></div>
+  <form action="{% url 'post_create' %}" method="post">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+    <div class="actions">
+      <button class="btn" type="submit">Share</button>
+      <span class="chip">Text</span>
+      <span class="chip">Public</span>
+    </div>
+  </form>
+  </section>
+
+{% for post in posts %}
+  <article class="card post">
+    <div class="avatar"></div>
+    <div>
+      <div class="post__header">
+        <a class="post__user" href="{% url 'profile_detail' post.author.username %}">@{{ post.author.username }}</a>
+        <span class="post__time">{{ post.created_at|date:"M j, H:i" }}</span>
+      </div>
+      <p>{{ post.content|linebreaksbr }}</p>
+      <div class="actions">
+        <form action="{% url 'like_toggle' post.pk %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn--ghost" type="submit">❤ {{ post.like_count }}</button>
+        </form>
+        <a class="btn btn--ghost" href="{% url 'post_detail' post.pk %}">💬 {{ post.comments.count }}</a>
+      </div>
+    </div>
+  </article>
+{% empty %}
+  <div class="card"><p class="muted">No posts yet. Follow people or create your first post!</p></div>
+{% endfor %}
+{% endblock %}

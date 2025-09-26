@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Post {{ post.id }}{% endblock %}
+{% block content %}
+<article class="card post">
+  <div class="avatar"></div>
+  <div>
+    <div class="post__header">
+      <a class="post__user" href="{% url 'profile_detail' post.author.username %}">@{{ post.author.username }}</a>
+      <span class="post__time">{{ post.created_at|date:"M j, H:i" }}</span>
+    </div>
+    <p>{{ post.content|linebreaksbr }}</p>
+    <div class="actions">
+      <form action="{% url 'like_toggle' post.pk %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn--ghost" type="submit">❤ {{ post.like_count }}</button>
+      </form>
+    </div>
+  </div>
+  
+</article>
+
+<section class="card">
+  <h3>Comments</h3>
+  {% for c in post.comments.all %}
+    <div class="comment">
+      <div class="meta">
+        <strong>@{{ c.author.username }}</strong>
+        <span class="muted">{{ c.created_at|date:"M j, H:i" }}</span>
+      </div>
+      <p>{{ c.content|linebreaksbr }}</p>
+    </div>
+  {% empty %}
+    <p class="muted">No comments yet.</p>
+  {% endfor %}
+
+  {% if user.is_authenticated %}
+  <form action="{% url 'comment_create' post.pk %}" method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <div class="actions">
+      <button class="btn" type="submit">Comment</button>
+    </div>
+  </form>
+  {% else %}
+    <p class="muted"><a href="{% url 'login' %}">Login</a> to comment.</p>
+  {% endif %}
+</section>
+{% endblock %}
