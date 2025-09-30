@@ -20,15 +20,13 @@ def signup(request):
         form = SignupForm()
     return render(request, "registration/signup.html", {"form": form})
 
-@login_required
 def feed(request):
-    following_ids = Follow.following_ids_for(request.user)
     posts = (
-        Post.objects.filter(Q(author=request.user) | Q(author__in=following_ids))
+        Post.objects.all()
         .select_related("author")
         .prefetch_related("comments__author", "likes")
     )
-    post_form = PostForm()
+    post_form = PostForm() if request.user.is_authenticated else None
     return render(request, "feed.html", {"posts": posts, "post_form": post_form})
 
 @login_required

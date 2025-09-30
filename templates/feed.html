@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Feed{% endblock %}
 {% block content %}
-
-<section class="card composer">
-  <div class="avatar"></div>
-  <form action="{% url 'post_create' %}" method="post">
-    {% csrf_token %}
-    {{ post_form.as_p }}
-    <div class="actions">
-      <button class="btn" type="submit">Share</button>
-      <span class="chip">Text</span>
-      <span class="chip">Public</span>
-    </div>
-  </form>
+{% if user.is_authenticated and post_form %}
+  <section class="card composer">
+    <div class="avatar"></div>
+    <form action="{% url 'post_create' %}" method="post">
+      {% csrf_token %}
+      {{ post_form.as_p }}
+      <div class="actions">
+        <button class="btn" type="submit">Share</button>
+        <span class="chip">Text</span>
+        <span class="chip">Public</span>
+      </div>
+    </form>
   </section>
+{% else %}
+  <div class="card">
+    <p class="muted">Log in to share a post. <a href="{% url 'login' %}">Login</a> · <a href="{% url 'signup' %}">Sign up</a></p>
+  </div>
+{% endif %}
 
 {% for post in posts %}
   <article class="card post">
